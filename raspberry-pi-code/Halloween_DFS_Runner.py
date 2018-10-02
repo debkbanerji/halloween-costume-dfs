@@ -1,15 +1,17 @@
 import time
 import RPi.GPIO as GPIO  # Import GPIO library
 
-start_button_pin_number = -1  # TODO: SET
-stop_button_pin_number = -1  # TODO: SET
+print('RUNNING DFS LED SCRIPT')
+
+start_button_pin_number = 2
+stop_button_pin_number = 3 
 
 pin_number_map = {
-
+    'A': 45
 }
 
 adjacency_list = {
-
+    'A': []
 }
 
 start_node = 'S'
@@ -17,25 +19,28 @@ start_node = 'S'
 delay_seconds = 1
 flash_seconds = 0.4
 
-GPIO.setmode(GPIO.BOARD)  # Set GPIO pin numbering
+GPIO.setmode(GPIO.BCM)  # Set GPIO pin numbering
 GPIO.setup(start_button_pin_number, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(stop_button_pin_number, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-algorithm_currently_running = True
+algorithm_currently_running = False
 
 
 def start_dfs():
+    print('Starting DFS')
     global algorithm_currently_running
     algorithm_currently_running = True
     reset_system()
     dfs(start_node, [])
+    
+    # Flash grapgh once done
     for i in range(0, 2):
         turn_off_all_leds()
         time.sleep(flash_seconds)
         turn_on_all_leds()
     reset_system()
     algorithm_currently_running = False
-
+    print('Ending DFS')
 
 def dfs(node, visited_list):
     global algorithm_currently_running
@@ -64,17 +69,17 @@ def turn_on_led(pin_number):
 
 def turn_off_all_leds():
     for node in pin_number_map.keys():
-        turn_off_led(adjacency_list[node])
+        turn_off_led(pin_number_map[node])
 
 
 def turn_on_all_leds():
     for node in pin_number_map.keys():
-        turn_on_led(adjacency_list[node])
+        turn_on_led(pin_number_map[node])
 
 
 def reset_system():
     global algorithm_currently_running
-    algorithm_currently_running = True
+    algorithm_currently_running = False
     turn_off_all_leds()
 
 
@@ -90,5 +95,7 @@ def should_stop():
 
 # Main runner
 while True:
+    #print(GPIO.input(start_button_pin_number))
+    #print(GPIO.input(stop_button_pin_number))
     if not algorithm_currently_running and should_start():
         start_dfs()
