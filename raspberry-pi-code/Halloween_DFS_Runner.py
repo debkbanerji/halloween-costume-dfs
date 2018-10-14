@@ -7,7 +7,13 @@ start_button_pin_number = 2
 stop_button_pin_number = 3 
 
 pin_number_map = {
-    'A': 17
+    'A': 17,
+    'B': 27,
+    'C': 22,
+    'D': 10,
+    'E': 9,
+    'F': 11,
+    'G': 5
 }
 
 adjacency_list = {
